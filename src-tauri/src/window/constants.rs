@@ -1,0 +1,9 @@
+pub const COMPACT_WIDTH: f64 = 236.0;
+pub const COMPACT_HEIGHT: f64 = 40.0;
+pub const EXPANDED_WIDTH: f64 = 440.0;
+pub const EXPANDED_HEIGHT: f64 = 190.0;
+pub const ATTENTION_WIDTH: f64 = 300.0;
+pub const ATTENTION_HEIGHT: f64 = 52.0;
+pub const MAX_NOTCH_WIDTH: f64 = 280.0;
+pub const NOTCH_CONTENT_WINGS: f64 = 240.0;
+pub const MAX_NOTCH_COMPACT_WIDTH: f64 = 400.0;

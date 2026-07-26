@@ -1,0 +1,101 @@
+.island {
+  transition:
+    width 220ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    height 220ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    border-radius var(--island-animation-duration) ease,
+    opacity 150ms ease,
+    transform var(--island-animation-duration) cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.island.is-transitioning.is-expanded {
+  transition:
+    width 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    height 260ms 90ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    border-radius 260ms 70ms ease,
+    opacity 150ms ease,
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.island.is-transitioning.is-compact {
+  transition:
+    height 190ms cubic-bezier(0.4, 0, 0.2, 1),
+    width 220ms 100ms cubic-bezier(0.2, 0.85, 0.2, 1),
+    border-radius 220ms ease,
+    opacity 150ms ease,
+    transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.compact-content,
+.expanded-content {
+  transition:
+    opacity 130ms ease,
+    transform 180ms ease;
+}
+
+.island.is-expanded .expanded-content {
+  animation: expanded-content-enter 190ms 180ms both ease-out;
+}
+
+.island.is-compact .compact-content {
+  animation: content-enter 150ms both ease-out;
+}
+
+.island.is-hidden {
+  opacity: 0;
+  transform: scale(0.84) translateY(-6px);
+  pointer-events: none;
+}
+
+.island.is-dismissing {
+  opacity: 0;
+  transform: scale(0.86) translateY(-5px);
+  pointer-events: none;
+}
+
+.activity-icon.is-recording {
+  animation: recording-pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expanded-content-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes recording-pulse {
+  50% {
+    box-shadow: 0 0 0 4px rgb(255 78 69 / 9%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island,
+  .compact-content,
+  .expanded-content,
+  .activity-icon.is-recording {
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    transition-duration: 1ms;
+  }
+
+  .island.is-hidden,
+  .island.is-dismissing {
+    transform: none;
+  }
+}
