@@ -2,10 +2,18 @@ use crate::platform::PlatformError;
 use crate::window::layout::ScreenGeometry;
 use objc2::MainThreadMarker;
 use objc2_app_kit::NSScreen;
+use std::sync::{Mutex, OnceLock};
 use tauri::WebviewWindow;
 
+static SCREEN_GEOMETRY_CACHE: OnceLock<Mutex<ScreenGeometry>> = OnceLock::new();
+
 pub fn screen_geometry(_window: &WebviewWindow) -> Result<ScreenGeometry, PlatformError> {
-    let mtm = MainThreadMarker::new().ok_or(PlatformError::NotMainThread)?;
+    let Some(mtm) = MainThreadMarker::new() else {
+        return SCREEN_GEOMETRY_CACHE
+            .get()
+            .and_then(|cache| cache.lock().ok().map(|screen| screen.clone()))
+            .ok_or(PlatformError::NotMainThread);
+    };
     let main = NSScreen::mainScreen(mtm).ok_or(PlatformError::Unavailable)?;
     let frame = main.frame();
     let visible = main.visibleFrame();
@@ -19,7 +27,7 @@ pub fn screen_geometry(_window: &WebviewWindow) -> Result<ScreenGeometry, Platfo
     let top = frame.origin.y + frame.size.height;
     let visible_top = top - (visible.origin.y + visible.size.height);
 
-    Ok(ScreenGeometry {
+    let geometry = ScreenGeometry {
         frame_x: frame.origin.x,
         frame_y: 0.0,
         frame_width: frame.size.width,
@@ -37,5 +45,10 @@ pub fn screen_geometry(_window: &WebviewWindow) -> Result<ScreenGeometry, Platfo
         auxiliary_right_width: (auxiliary_right.size.width > 0.0)
             .then_some(auxiliary_right.size.width),
         scale_factor: scale,
-    })
+    };
+    let cache = SCREEN_GEOMETRY_CACHE.get_or_init(|| Mutex::new(geometry.clone()));
+    if let Ok(mut cached) = cache.lock() {
+        *cached = geometry.clone();
+    }
+    Ok(geometry)
 }
